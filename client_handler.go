@@ -39,7 +39,11 @@ func (ch *ClientHandler) handleCommand(o interface{}) error {
 		if err != nil {
 			return err
 		}
-
+if cmd.PeerID > 1000 {
+isdone = false
+} else {
+isdone = true
+}
 	case *commands.ServerHello:
 		packet.ResetSeqNr(65500)
 		if ch.StalkMode {
