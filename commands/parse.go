@@ -2,7 +2,7 @@ package commands
 
 import (
 	"encoding/binary"
-	"fmt"
+	//"fmt"
 )
 
 func Parse(payload []byte) (Command, error) {
@@ -47,7 +47,7 @@ func Parse(payload []byte) (Command, error) {
 	case ServerCommandAccessDenied:
 		cmd = &ServerAccessDenied{}
 	default:
-		fmt.Printf("Unknown command received: %d\n", commandId)
+		//fmt.Printf("Unknown command received: %d\n", commandId)
 	}
 
 	if cmd != nil {
