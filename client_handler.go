@@ -29,7 +29,7 @@ func (ch *ClientHandler) HandlerLoop(cmd_chan chan commands.Command) {
 		}
 	}
 }
-
+var isdone = false
 func (ch *ClientHandler) handleCommand(o interface{}) error {
 	switch cmd := o.(type) {
 	case *commands.ServerSetPeer:
@@ -45,7 +45,7 @@ func (ch *ClientHandler) handleCommand(o interface{}) error {
 		if ch.StalkMode {
 			return nil
 		}
-
+		
 		if cmd.AuthMechanismSRP {
 			// existing client
 			var err error
@@ -53,14 +53,15 @@ func (ch *ClientHandler) handleCommand(o interface{}) error {
 			if err != nil {
 				return err
 			}
-
+			if isdone == true {
 			fmt.Printf("Sending SRP bytes A, len=%d\n", len(ch.SRPPubA))
 			err = ch.Client.SendCommand(commands.NewClientSRPBytesA(ch.SRPPubA))
 			if err != nil {
 				return err
 			}
 		}
-
+		isdone = true
+        }
 		if cmd.AuthMechanismFirstSRP {
 			// new client
 			salt, verifier, err := srp.NewClient([]byte(ch.Username), []byte(ch.Password))
@@ -154,7 +155,7 @@ func (ch *ClientHandler) handleCommand(o interface{}) error {
 		fmt.Println("Server sends csm restriction flags")
 
 		fmt.Println("Sending CLIENT_READY")
-		err := ch.Client.SendCommand(commands.NewClientReady(5, 5, 5, "mt-bot", 4))
+		err := ch.Client.SendCommand(commands.NewClientReady(5, 5, 5, "5.5.0", 4))
 		if err != nil {
 			return err
 		}
