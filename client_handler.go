@@ -16,6 +16,7 @@ type ClientHandler struct {
 	DownloadMedia bool
 	Password      string
 	StalkMode     bool
+	SkipSRP       int
 	SRPPubA       []byte
 	SRPPrivA      []byte
 	MediaHashes   map[string][]byte
@@ -29,7 +30,7 @@ func (ch *ClientHandler) HandlerLoop(cmd_chan chan commands.Command) {
 		}
 	}
 }
-var isdone = false
+
 func (ch *ClientHandler) handleCommand(o interface{}) error {
 	switch cmd := o.(type) {
 	case *commands.ServerSetPeer:
@@ -39,12 +40,9 @@ func (ch *ClientHandler) handleCommand(o interface{}) error {
 		if err != nil {
 			return err
 		}
-if cmd.PeerID > 1000 {
-isdone = false
-} else {
-isdone = true
-}
+
 	case *commands.ServerHello:
+        fmt.Printf("Server sent 'HELLO'\n")
 		packet.ResetSeqNr(65500)
 		if ch.StalkMode {
 			return nil
@@ -57,14 +55,15 @@ isdone = true
 			if err != nil {
 				return err
 			}
-			if isdone == true {
+			if ch.SkipSRP <= 0 {
 			fmt.Printf("Sending SRP bytes A, len=%d\n", len(ch.SRPPubA))
 			err = ch.Client.SendCommand(commands.NewClientSRPBytesA(ch.SRPPubA))
 			if err != nil {
 				return err
 			}
-		}
-		isdone = true
+            } else {
+            ch.SkipSRP = ch.SkipSRP - 1
+            }
         }
 		if cmd.AuthMechanismFirstSRP {
 			// new client
