@@ -11,11 +11,12 @@ import (
 
 func main() {
 	var host, username, password string
-	var port int
+	var port, skip int
 	var stalk, downloadmedia, help, ping bool
 
 	flag.StringVar(&host, "host", "127.0.0.1", "The hostname")
 	flag.IntVar(&port, "port", 30000, "The portname")
+    flag.IntVar(&skip, "skip", 0, "Skip some SRP sending to prevent 'access denied'")
 	flag.BoolVar(&help, "help", false, "Shows the help")
 	flag.StringVar(&username, "username", "test", "The username")
 	flag.StringVar(&password, "password", "enter", "The password")
@@ -49,6 +50,7 @@ func main() {
 		Username:      username,
 		Password:      password,
 		StalkMode:     stalk,
+        SkipSRP:       skip,
 		DownloadMedia: downloadmedia,
 	}
 
